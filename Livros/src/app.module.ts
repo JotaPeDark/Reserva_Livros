@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
-import { LivrosService } from './livros/livros.service';
-import { LivrosController } from './livros/livros.controller';
+import { MongooseModule } from '@nestjs/mongoose';
 import { LivrosModule } from './livros/livros.module';
 
 @Module({
-  imports: [LivrosModule],
-  controllers: [LivrosController],
-  providers: [LivrosService],
+  imports: [
+    MongooseModule.forRoot('mongodb://localhost:27017/biblioteca_livros'),
+    LivrosModule,
+  ],
 })
 export class AppModule {}
