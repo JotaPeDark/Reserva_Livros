@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+
+  livros-service:
+    build: ./Livros
+    ports:
+      - "3000:3000"
+    environment:
+      - MONGODB_URI=mongodb://mongodb:27017/biblioteca
+    depends_on:
+      - mongodb
+
+  reservas-service:
+    build: ./Reserva_Livros
+    ports:
+      - "3001:3001"
+    environment:
+      - LIVROS_SERVICE_URL=http://livros-service:3000
+    depends_on:
+      - livros-service
+
+volumes:
+  mongodb_data: 

@@ -1,19 +1,21 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Document } from 'mongoose';
 
-@Entity()
+export type LivroDocument = Livro & Document;
+
+@Schema()
 export class Livro {
-  @PrimaryGeneratedColumn()
-  id: number;
-
-  @Column()
+  @Prop()
   titulo: string;
 
-  @Column()
+  @Prop()
   autor: string;
 
-  @Column()
+  @Prop()
   ISBM: string;
 
-  @Column({ default: 'disponível' })
+  @Prop({ default: 'disponível' })
   status: string;
-} 
+}
+
+export const LivroSchema = SchemaFactory.createForClass(Livro); 

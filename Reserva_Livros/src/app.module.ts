@@ -4,7 +4,7 @@ import { ReservasModule } from './reservas/reservas.module';
 
 @Module({
   imports: [
-    MongooseModule.forRoot('mongodb://localhost:27017/biblioteca_reservas'),
+    MongooseModule.forRoot('mongodb://mongodb:27017/biblioteca_reservas'),
     ReservasModule,
   ],
 })

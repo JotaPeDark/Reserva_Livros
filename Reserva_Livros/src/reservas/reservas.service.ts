@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { HttpService } from '@nestjs/axios';
@@ -8,6 +8,8 @@ import { CreateReservaDto } from './dto/create-reserva.dto';
 
 @Injectable()
 export class ReservasService {
+  private readonly livrosServiceUrl = 'http://livros-service:3000';
+
   constructor(
     @InjectModel(Reserva.name) private reservaModel: Model<ReservaDocument>,
     private readonly httpService: HttpService,
@@ -15,32 +17,25 @@ export class ReservasService {
 
   async create(createReservaDto: CreateReservaDto): Promise<Reserva> {
     try {
-      // Verificar disponibilidade do livro
-      const response = await firstValueFrom(
-        this.httpService.get(`http://localhost:3000/livros/isbm/${createReservaDto.ISBM}`),
+      // Primeiro, atualiza o status do livro para reservado
+      await firstValueFrom(
+        this.httpService.patch(
+          `${this.livrosServiceUrl}/livros/${createReservaDto.livroId}/status`,
+          { status: 'reservado' }
+        )
       );
-      
-      if (response.data.status !== 'disponível') {
-        throw new BadRequestException('Livro não está disponível para reserva');
-      }
 
       // Criar a reserva
       const createdReserva = new this.reservaModel(createReservaDto);
-      const savedReserva = await createdReserva.save();
-
-      // Atualizar status do livro
-      await firstValueFrom(
-        this.httpService.patch(`http://localhost:3000/livros/isbm/${createReservaDto.ISBM}/status`, {
-          status: 'reservado',
-        }),
-      );
-
-      return savedReserva;
+      return createdReserva.save();
     } catch (error) {
       if (error.response?.status === 404) {
         throw new NotFoundException('Livro não encontrado');
       }
-      throw error;
+      throw new HttpException(
+        'Erro ao criar reserva',
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
     }
   }
 
@@ -56,9 +51,10 @@ export class ReservasService {
 
     // Atualizar status do livro para disponível
     await firstValueFrom(
-      this.httpService.patch(`http://localhost:3000/livros/isbm/${reserva.ISBM}/status`, {
-        status: 'disponível',
-      }),
+      this.httpService.patch(
+        `${this.livrosServiceUrl}/livros/${reserva.livroId}/status`,
+        { status: 'disponível' }
+      )
     );
 
     // Atualizar status da reserva

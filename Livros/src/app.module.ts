@@ -4,7 +4,7 @@ import { LivrosModule } from './livros/livros.module';
 
 @Module({
   imports: [
-    MongooseModule.forRoot('mongodb://localhost:27017/biblioteca_livros'),
+    MongooseModule.forRoot('mongodb://mongodb:27017/biblioteca_livros'),
     LivrosModule,
   ],
 })

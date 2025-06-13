@@ -9,6 +9,9 @@ export class Reserva {
   userId: number;
 
   @Prop({ required: true })
+  livroId: string;
+
+  @Prop({ required: true })
   ISBM: string;
 
   @Prop({ required: true })

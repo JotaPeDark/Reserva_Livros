@@ -14,4 +14,8 @@ export class CreateReservaDto {
   @Type(() => Date)
   @IsDate()
   dataReserva: Date;
+
+  @IsNotEmpty()
+  @IsString()
+  livroId: string;
 } 
