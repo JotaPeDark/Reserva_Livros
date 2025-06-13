@@ -8,7 +8,7 @@ import { CreateReservaDto } from './dto/create-reserva.dto';
 
 @Injectable()
 export class ReservasService {
-  private readonly livrosServiceUrl = 'http://livros-service:3000';
+  private readonly livrosServiceUrl = 'http://localhost:3000';
 
   constructor(
     @InjectModel(Reserva.name) private reservaModel: Model<ReservaDocument>,
